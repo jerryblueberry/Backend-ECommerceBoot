@@ -9,7 +9,7 @@ const sendSignupMail = async (email, otp) => {
       service: 'gmail',
       auth: {
         user: 'jerrytechs83@gmail.com',
-        pass: 'kafj iqdy dwsb tcpr',
+        pass: 'kalc gmre auxn vxle',
       },
     });
 
@@ -35,7 +35,7 @@ const sendForgotPasswordMail = async (email, otp) => {
       service: 'gmail',
       auth: {
         user: 'jerrytechs83@gmail.com',
-        pass: 'kafj iqdy dwsb tcpr',
+        pass: 'kalc gmre auxn vxle',
       },
     });
 
