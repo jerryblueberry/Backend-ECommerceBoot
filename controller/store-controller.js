@@ -6,7 +6,7 @@ const Store = require('../models/store-model');
 const createStore = asyncHandler(async(req,res) => {
     try {
         const userId =  req.user._id;
-        const {name,description,address,category,contactNo,longitude,latitude} = req.body;
+        const {name,description,address,category,contactNo,longitude,latitude,subCategory} = req.body;
 
         if(!name || !description || !address || !category || !contactNo || !longitude || !latitude){
             return res.status(400).json({error:"All fields are required"});
@@ -21,6 +21,7 @@ const createStore = asyncHandler(async(req,res) => {
             address,
             logo:logo||null,
             category:category.toLowerCase(),
+            
             contactNo,
             location:{
                 type,
@@ -39,6 +40,9 @@ const createStore = asyncHandler(async(req,res) => {
         res.status(500).json({error:error.message});
     }
 });
+
+
+
 
 
 

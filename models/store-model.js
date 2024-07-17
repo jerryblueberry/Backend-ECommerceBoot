@@ -30,7 +30,7 @@ const storeSchema = new mongoose.Schema({
             required:true,
         }
     },
-    isverified:{
+    isVerified:{
         type:Boolean,
         default:false,
     },

@@ -43,8 +43,11 @@ const registerUser  = asyncHandler(async(req,res) => {
         });
 
         await newUser.save();
-        await sendSignupMail(email,otp);
+        
         res.status(200).json({message:"Signed Up Successfully,We've sent you OTP to verify your account."})
+         sendSignupMail(email,otp).catch(error => {
+            console.error("Error sending email",error);
+         });
     } catch (error) {
         console.log("Error Occurred",error.message);
         res.status(500).json({ error:error.message});
@@ -91,12 +94,18 @@ const forgotPassword = asyncHandler(async(req,res) => {
         }
 
         const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({error:"User not found"})
+        }
 
        const newOTP = forgotPasswordOTP();
        user.OTP = newOTP;
        await user.save();
-       await sendForgotPasswordMail(email,newOTP);
        res.status(200).json({message:"We've sent you OTP for password reset"});
+        sendForgotPasswordMail(email,newOTP).catch(error => {
+            console.error("Error sending email",error);
+        });
+       
 
 
     } catch (error) {
