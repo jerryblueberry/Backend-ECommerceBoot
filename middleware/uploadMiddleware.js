@@ -38,9 +38,9 @@ const singleUploadStore= multer({
   limits: limits,
 }).single('logo'); 
 
-// const multipleUpload = multer({
-//   storage: storage,
-//   fileFilter: fileFilter,
-//   limits: limits,
-// }).array('image', 5);
-module.exports = { singleUpload,singleUploadStore};
+const multipleUpload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: limits,
+}).array('images', 5);
+module.exports = { singleUpload,singleUploadStore,multipleUpload};

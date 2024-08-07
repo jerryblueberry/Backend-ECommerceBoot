@@ -8,6 +8,7 @@ const path = require('path');
 const User = require('./routes/user-routes'); // Routes for Users
 const Store  = require('./routes/store-routes'); //Routes for Stores
 const Product = require('./routes/product-routes'); //Routes for Products
+const Admin = require('./routes/admin-routes'); //Routes for Admin
 
 const PORT  = 5000;
 
@@ -33,6 +34,7 @@ app.use("/files",express.static(path.join(__dirname,"files")));
 app.use('/user',User);
 app.use('/store',Store);
 app.use('/product',Product);
+app.use('/admin',Admin);
 
 
 

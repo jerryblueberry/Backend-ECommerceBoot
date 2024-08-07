@@ -30,4 +30,16 @@ const verifyAuth  = async(req,res,next) => {
     }
 }
 
-module.exports = {verifyAuth};
+//  for admin auth and authorization
+const isAdmin = (req, res, next) => {
+    // console.log('User:', req.user); // Log the user object
+    if (req.user.role === 'admin') {
+      next(); // User has the "Admin" role, proceed to the next middleware or route handler
+    } else {
+      return res
+        .status(403)
+        .json({ message: 'Forbidden: Only admin can perform this action' });
+    }
+  };
+
+module.exports = {verifyAuth,isAdmin};

@@ -1,78 +1,245 @@
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/product-model');
 
+const addProduct = asyncHandler(async (req, res) => {
+  try {
+    const {
+      name,
+      category,
+      subCategory,
+      color,
+      size,
+      rating,
+      review,
+      description,
+      price,
+      quantity,
+      storeId,
+      sku,
+      discount,
+      tags,
+      brand,
+      dateAdded,
+      dimensions,
+      weight,
+      status,
+    } = req.body;
 
-
-const addProduct = asyncHandler(async(req,res) => {
-    try {
-        const {name,description,price,quantity,storeId} = req.body;
-
-        if(!name || !description || !price || !quantity || !storeId){
-            return res.status(400).json({error:"All fields are required"});
-        }
-
-        const newProduct = new Product({
-            name,
-            description,
-            price,
-            quantity,
-            images:["abc.jpg",'abc.png'],
-            storeId
-
-        });
-
-        await newProduct.save();
-        res.status(200).json({message:"Product Added Successfully"});
-
-        
-    } catch (error) {
-        res.status(500).json({error:error.message});
+    if (
+      !name ||
+      !category ||
+      !subCategory ||
+      !description ||
+      !price ||
+      !quantity ||
+      !storeId ||
+      !sku
+    ) {
+      return res.status(400).json({ error: 'Required fields are missing' });
     }
+    let imageFile = req.files? req.files.map((file) => file.path):null
+
+    const newProduct = new Product({
+      name,
+      category,
+      subCategory,
+      color,
+      size,
+      rating,
+      review,
+      description,
+      price,
+      quantity,
+      images:imageFile,
+      storeId,
+      sku,
+      discount,
+      tags,
+      brand,
+      dateAdded,
+      dimensions,
+      weight,
+      status,
+    });
+
+    await newProduct.save();
+
+    res
+      .status(201)
+      .json({ message: 'Product added successfully', product: newProduct });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
+
+// get all products
+const getProducts = async (req, res) => {
+  try {
+    const products = await Product.find().populate('storeId', 'name');
+    console.log(products);
+    res.status(200).json({ products });
+  } catch (error) {
+    res.status(200).json({ error: error.message });
+  }
+};
+
+//  get the products by category and the filters
+
+// const mobileApi = asyncHandler(async (req, res) => {
+//   try {
+//     const { priceRange, brand, ratings, color } = req.query;
+
+//     // Parse the filters
+//     const [minPrice, maxPrice] = priceRange ? priceRange.split(',').map(Number) : [0, Infinity];
+//     const brandFilter = brand ? { brand: new RegExp(brand, 'i') } : {};
+
+//     // Parse and convert ratings to strings
+//     const ratingsArray = ratings ? ratings.split(',').map(rating => rating.trim()) : [];
+//     const ratingsFilter = ratingsArray.length ? { rating: { $in: ratingsArray } } : {};
+
+//     // Create the filter object
+//     const filter = {
+//       ...brandFilter,
+//       ...ratingsFilter,
+//       price: { $gte: minPrice, $lte: maxPrice }
+//     };
+
+//     const products = await Product.find(filter);
+//     res.json(products);
+//   } catch (error) {
+//     console.error("Error Fetching products", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+const mobileApi = asyncHandler(async (req, res) => {
+  try {
+    const { priceRange, brand, ratings, color } = req.query;
+
+    // Parse the filters
+    const [minPrice, maxPrice] = priceRange ? priceRange.split(',').map(Number) : [0, Infinity];
+    const brandFilter = brand ? { brand: new RegExp(brand, 'i') } : {};
+
+    // Parse and convert ratings range to numbers
+    const [minRating, maxRating] = ratings ? ratings.split(',').map(Number) : [0, 5];
+    const ratingsFilter = { rating: { $gte: minRating, $lte: maxRating } };
+
+    // Create the filter object
+    const filter = {
+      ...brandFilter,
+      ...ratingsFilter,
+      price: { $gte: minPrice, $lte: maxPrice }
+    };
+
+    const products = await Product.find(filter);
+    res.json(products);
+  } catch (error) {
+    console.error("Error Fetching products", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+const fetchProductsForBrand = async (brand) => {
+  try {
+    const products = await Product.find({ brand: new RegExp(brand, 'i') }).limit(5);
+    return products;
+  } catch (error) {
+    console.error(`Error fetching products for brand ${brand}`, error);
+    return [];
+  }
+};
+
+
+
+const fetchProductsForAllBrandsMobile = async (brands) => {
+  const brandList = brands.slice(0, 5); // Limit to 5 brands
+  const productPromises = brandList.map(brand => fetchProductsForBrand(brand));
+  const allProducts = await Promise.all(productPromises);
+  return allProducts.flat(); 
+};
+
+//  get the products from each brand for mobile phone
+const mobileBrands = asyncHandler(async (req, res) => {
+  try {
+    const { brands } = req.query;
+
+    if (!brands) {
+      return res.status(400).json({ error: "Brands query parameter is required" });
+    }
+
+    const brandList = brands.split(',').map(brand => brand.trim());
+    const products = await fetchProductsForAllBrandsMobile(brandList);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Internal Server Error", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 // get products detail
-const getProductDetails = asyncHandler(async(req,res) => {
-    try {
-        const {productId} = req.body;
+const getProductDetails = asyncHandler(async (req, res) => {
+  try {
+    const { sku } = req.params;
 
-        if(!productId){
-            return res.status(404).json({error:"Product Id must be provided"});
-        }
-
-        const product = await Product.findById(productId).populate("storeId",'name address');
-
-
-        if(!product){
-            return res.status(404).json({error:"Product Not found"});
-        }
-        res.status(200).json({product});
-
-
-        
-    } catch (error) {
-        res.status(500).json({error:error.message});
+    if (!sku) {
+      return res.status(404).json({ error: 'Sku of a product must be provided' });
     }
+
+    // Fetch the main product
+    const product = await Product.findOne({ sku }).populate('storeId', 'name address');
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product Not found' });
+    }
+
+    // Check if the storeId is populated
+    const storeId = product.storeId ? product.storeId._id : null;
+
+    // Fetch similar products based on category and/or brand
+    const similarProducts = await Product.find({
+      category: product.category,
+      _id: { $ne: product._id } // Exclude the current product
+    }).limit(2);
+
+    // Fetch other products from the same vendor if storeId is available
+    const vendorProducts = storeId
+      ? await Product.find({
+          storeId,
+          _id: { $ne: product._id } // Exclude the current product
+        }).limit(5)
+      : [];
+
+    res.status(200).json({
+      product,
+      recommendations: {
+        similarProducts,
+        vendorProducts
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 
-const updateProduct = asyncHandler(async(req,res) => {
-    try {
-        const productId = req.params.productId;
-        const {name,description,price,quantity,category,rating} = req.body;
+const updateProduct = asyncHandler(async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const { name, description, price, quantity, category, rating } = req.body;
 
-        const product = await Product.findByIdAndUpdate(productId,{
-            name,
-            description,
-            price,
-            quantity,
-            
-        })
-    } catch (error) {
-        res.status(500).json({error:error.message});
-    }
-})
-
+    const product = await Product.findByIdAndUpdate(productId, {
+      name,
+      description,
+      price,
+      quantity,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 //  left for the product
-module.exports = {addProduct,getProductDetails};
+module.exports = { getProducts, addProduct, getProductDetails,mobileApi,mobileBrands};

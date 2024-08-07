@@ -207,6 +207,6 @@ const userDetail = asyncHandler(async(req,res) => {
 }); 
 
 
-// user Logout controller
+
 
 module.exports = {registerUser,verifyStatus,forgotPassword,createNewPassword,loginUser,logoutUser,userDetail};

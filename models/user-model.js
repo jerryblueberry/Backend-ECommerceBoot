@@ -43,9 +43,10 @@ const userSchema = new mongoose.Schema({
 
 
 });
-//  add 2d sphere index to the location field
+//   2d sphere index to the location field
 userSchema.index({location:'2dsphere'});
 
+userSchema.index({role:1});
 
 
 const User = mongoose.model("User",userSchema);
