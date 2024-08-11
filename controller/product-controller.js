@@ -7,14 +7,12 @@ const addProduct = asyncHandler(async (req, res) => {
       name,
       category,
       subCategory,
-      color,
       size,
       rating,
       review,
       description,
       price,
       quantity,
-      storeId,
       sku,
       discount,
       tags,
@@ -23,7 +21,14 @@ const addProduct = asyncHandler(async (req, res) => {
       dimensions,
       weight,
       status,
+      description1,
+      description2,
+      ram,
+      storage,
+      offers,
+      highlights
     } = req.body;
+    const { storeId } = req.params;
 
     if (
       !name ||
@@ -37,20 +42,29 @@ const addProduct = asyncHandler(async (req, res) => {
     ) {
       return res.status(400).json({ error: 'Required fields are missing' });
     }
-    let imageFile = req.files? req.files.map((file) => file.path):null
 
+    const imageFiles = req.files['images'] ? req.files['images'].map((file) => file.path) : [];
+    const colorFiles = req.files['color'] ? req.files['color'].map((file) => file.path) : [];
+    const descriptionImage1 = req.files['description1Img'] ? req.files['description1Img'][0].path : null;
+    const descriptionImage2 = req.files['description2Img'] ? req.files['description2Img'][0].path : null;
+
+    // Parse ram, storage, and offers if they are strings within an array
+    const parsedRam = ram ? ram.split(',').map(Number) : [];
+    const parsedStorage = storage ? storage.split(',').map(Number) : [];
+    const parsedOffers = offers ? offers.split(',').map(offer => offer.trim()) : [];
+    const parsedHighlights = highlights ? highlights.split(',').map(highlight => highlight.trim()):[];
     const newProduct = new Product({
       name,
       category,
       subCategory,
-      color,
+      color: colorFiles,
       size,
       rating,
       review,
       description,
       price,
       quantity,
-      images:imageFile,
+      images: imageFiles,
       storeId,
       sku,
       discount,
@@ -60,18 +74,25 @@ const addProduct = asyncHandler(async (req, res) => {
       dimensions,
       weight,
       status,
+      ram: parsedRam,
+      storage: parsedStorage,
+      offers: parsedOffers,
+      productDescription: {
+        description1,
+        description2,
+        description1Img: descriptionImage1,
+        description2Img: descriptionImage2,
+      },
+      highlights:parsedHighlights,
     });
 
     await newProduct.save();
 
-    res
-      .status(201)
-      .json({ message: 'Product added successfully', product: newProduct });
+    res.status(201).json({ message: 'Product added successfully', product: newProduct });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 // get all products
 const getProducts = async (req, res) => {
   try {
@@ -200,9 +221,9 @@ const getProductDetails = asyncHandler(async (req, res) => {
 
     // Fetch similar products based on category and/or brand
     const similarProducts = await Product.find({
-      category: product.category,
+      category: [product.category||product.brand],
       _id: { $ne: product._id } // Exclude the current product
-    }).limit(2);
+    }).limit(5);
 
     // Fetch other products from the same vendor if storeId is available
     const vendorProducts = storeId

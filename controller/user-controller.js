@@ -165,9 +165,9 @@ const loginUser = asyncHandler(async(req,res) => {
         if(!passwordMatch){
             return res.status(404).json({error:"Password or Email Incorrect"});
         }
-        tokenGenerate(user._id,user.name,user.role,user.location,user.profilePicture,res);
+       const token =  tokenGenerate(user._id,user.name,user.role,user.location,user.profilePicture,res);
         res.cookie("USerName",user.name);
-        res.status(200).json({message:"Logged in Successfully",user:user});
+        res.status(200).json({message:"Logged in Successfully",user:user,token});
 
     } catch (error) {
         console.log("Error Occurred WHile logging User",error);

@@ -43,4 +43,27 @@ const multipleUpload = multer({
   fileFilter: fileFilter,
   limits: limits,
 }).array('images', 5);
-module.exports = { singleUpload,singleUploadStore,multipleUpload};
+
+const upload = multer({
+  storage:storage,
+  fileFilter:fileFilter,
+  limits:limits
+}).fields([
+  {name:'images',maxCount:5},
+  {name:'color',maxCount:5},
+  {name:'description1Img',maxCount:1},
+  {name:'description2Img',maxCount:1}
+   
+])
+
+const sellerDocuments = multer({
+  storage:storage,
+  fileFilter:fileFilter,
+  limits:limits
+}).fields([
+  {name:'panCard',maxCount:1},
+  {name:'storeRegistration',maxCount:1},
+  {name:'identityCard',maxCount:1}
+]);
+
+module.exports = { singleUpload,singleUploadStore,multipleUpload,upload,sellerDocuments};

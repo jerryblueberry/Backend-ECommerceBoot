@@ -30,6 +30,11 @@ const storeSchema = new mongoose.Schema({
             required:true,
         }
     },
+    status:{
+        type:String,
+        enum:["pending","verified","rejected"],
+        default:"pending",
+    },
     isVerified:{
         type:Boolean,
         default:false,
@@ -45,7 +50,13 @@ const storeSchema = new mongoose.Schema({
     description:{
         type:String,
         maxLength:250 //250 Characters
-    },
+    }
+    // ,
+    // documents:{
+    //     type:mongoose.Schema.Types.ObjectId,
+    //     ref:'SellerDocuments',
+    //     required:true,
+    // } might need later   
     // banner
     // social links
 

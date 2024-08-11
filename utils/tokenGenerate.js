@@ -7,9 +7,11 @@ const tokenGenerate = (userId,userName,userRole,userLocation,userProfile,res) =>
     });
     res.cookie("jwt",token,{
         maxAge:15*60*60*24*1000, ///MS
-        httpOnly:false, //Prevent XSS attacks cross-site scripting attacks
+        httpOnly:true, //Prevent XSS attacks cross-site scripting attacks
         sameSite:"strict", //CSRF attacks cross-site request forgery attacks
     })
+    console.log("Generated ToKen : ",token);
+    return token;
   
    
 };
