@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Store = require('../models/store-model');
 const SellerDocuments = require('../models/seller-documents');
-
+const Product = require('../models/product-model');
 
 
 const createStore = asyncHandler(async(req,res) => {
@@ -41,6 +41,21 @@ const createStore = asyncHandler(async(req,res) => {
         res.status(500).json({error:error.message});
     }
 });
+
+
+//  check  the store info by userId 
+const storeCheck = asyncHandler(async(req,res) => {
+    try {
+        const userId = req.user._id;
+        const store = await Store.find({userId});
+        // if(!store){
+        //     return res.status(400).json({message:"Store Not found "})
+        // }
+        res.status(200).json({store});
+    } catch (error) {
+        res.status(500).json({message:error.message});
+    }
+})
 
 
 //  submit documents and in frontend post to both the at same time 
@@ -103,7 +118,19 @@ const getStoreDetail = asyncHandler(async(req,res) => {
     }
 });
 
+//  fetch product for the  store and see all his products
+const getProductsForStore = asyncHandler(async(req,res) => {
+    try {
+        const {storeId} = req.params;
+
+        const products = await Product.find({storeId});
+        res.status(200).json({products});
+    } catch (error) {
+        res.status(500).json({error:error.message});
+    }
+})
+
 //  nearby store
 
 
-module.exports = {createStore,submitDocuments,getStoreDetail};
+module.exports = {createStore,submitDocuments,getStoreDetail,storeCheck,getProductsForStore};
