@@ -307,7 +307,7 @@ const getProductDetails = asyncHandler(async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
+//  Update Product Endpoint
 const updateProduct = asyncHandler(async (req, res) => {
   try {
     // Extract fields from request body
@@ -364,6 +364,22 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// Delete Product
+const deleteProduct = asyncHandler(async(req,res) => {
+  try {
+    const {sku} = req.params;
+    const product = await Product.findOneAndDelete({sku})
+    if(!product){
+      return res.status(404).json({message:"Product Not found"});
+    }
+    res.status(200).json({message:"Product Deleted Successfully"});
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+})
+
+
+
 
 //  left for the product
 module.exports = {
@@ -373,5 +389,6 @@ module.exports = {
   mobileApi,
   mobileBrands,
   fashionCategories,
-  updateProduct
+  updateProduct,
+  deleteProduct
 };

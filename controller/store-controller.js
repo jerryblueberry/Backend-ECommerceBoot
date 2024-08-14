@@ -123,7 +123,7 @@ const getProductsForStore = asyncHandler(async(req,res) => {
     try {
         const {storeId} = req.params;
 
-        const products = await Product.find({storeId});
+        const products = await Product.find({storeId}   );
         res.status(200).json({products});
     } catch (error) {
         res.status(500).json({error:error.message});

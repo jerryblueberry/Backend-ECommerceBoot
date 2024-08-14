@@ -9,7 +9,9 @@ const User = require('./routes/user-routes'); // Routes for Users
 const Store  = require('./routes/store-routes'); //Routes for Stores
 const Product = require('./routes/product-routes'); //Routes for Products
 const Admin = require('./routes/admin-routes'); //Routes for Admin
-
+const Bidding = require('./routes/bidding-routes');
+const Order = require('./routes/order-routes'); 
+const Cart = require('./routes/cart-route');
 const PORT  = 5000;
 
 
@@ -35,7 +37,9 @@ app.use('/user',User);
 app.use('/store',Store);
 app.use('/product',Product);
 app.use('/admin',Admin);
-
+app.use('/bidding',Bidding);
+app.use('/order',Order);
+app.use('/cart',Cart);
 
 
 

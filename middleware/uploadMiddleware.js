@@ -66,4 +66,6 @@ const sellerDocuments = multer({
   {name:'identityCard',maxCount:1}
 ]);
 
+
+
 module.exports = { singleUpload,singleUploadStore,multipleUpload,upload,sellerDocuments};
