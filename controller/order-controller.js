@@ -54,4 +54,13 @@ const getOrders = asyncHandler(async(req,res) => {
     }
 });
 
+//  get orders for the stores
+// const getOrderForStores = asyncHandler((req,res) => {
+//     try {
+//         const {}
+//     } catch (error) {
+//         res.status(200).json({error:error.message});
+//     }
+// })
+
 module.exports = {orderProduct,getOrders};

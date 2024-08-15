@@ -12,6 +12,9 @@ const Admin = require('./routes/admin-routes'); //Routes for Admin
 const Bidding = require('./routes/bidding-routes');
 const Order = require('./routes/order-routes'); 
 const Cart = require('./routes/cart-route');
+const NearBy = require('./routes/nearby-routes');
+
+
 const PORT  = 5000;
 
 
@@ -40,6 +43,7 @@ app.use('/admin',Admin);
 app.use('/bidding',Bidding);
 app.use('/order',Order);
 app.use('/cart',Cart);
+app.use('/nearby',NearBy);
 
 
 

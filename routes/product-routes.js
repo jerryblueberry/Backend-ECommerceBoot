@@ -1,11 +1,12 @@
 const express = require('express');
-const { addProduct, getProductDetails, getProducts, mobileApi, mobileBrands, fashionCategories, updateProduct, deleteProduct } = require('../controller/product-controller');
+const { addProduct, getProductDetails, getProducts, mobileApi, mobileBrands, fashionCategories, updateProduct, deleteProduct, searchProduct } = require('../controller/product-controller');
 const { multipleUpload, upload } = require('../middleware/uploadMiddleware');
 const { verifyAuth, isSeller } = require('../middleware/authentication');
 
 const router   =  express.Router();
 
 router.post('/add-product/:storeId',upload,addProduct);
+router.get('/search',searchProduct)
 router.put('/update/:sku',verifyAuth,isSeller,upload,updateProduct)
 router.delete('/delete/:sku',verifyAuth,isSeller,deleteProduct);
 router.get('/all',getProducts)

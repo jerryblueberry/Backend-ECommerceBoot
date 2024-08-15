@@ -50,7 +50,7 @@ const addBiddingProduct = asyncHandler(async(req,res) => {
         store:storeId
        });
        const savedProduct = await newProduct.save();
-       res.status(200).json(savedProduct);
+       res.status(200).json({message:"Product Added Successfully"});
     } catch (error) {
         res.status(500).json({error:error.message});
     }
@@ -127,7 +127,7 @@ const calculateTimeRemaining = (endTime) => {
 //  get all the bidding products
 const getAllBiddingProduct = asyncHandler(async(req,res) => {
     try {
-        const products = await Bidding.find().populate({
+        const products = await Bidding.find({isVisible:true}).populate({
             path: 'bids',
             populate: {
               path: 'bidder',
@@ -146,7 +146,7 @@ const getAllBiddingProduct = asyncHandler(async(req,res) => {
 
             const remainingTime = calculateTimeRemaining(product.biddingEndTime);
 
-            const highestBidder = highestBid.bidder? highestBid.bidder.name:'Unknown';
+            const highestBidder = highestBid.bidder? highestBid.bidder.name:'Be the First Bidder';
             // Modify the structure to include highestBidderName below highestBid
             return{
                 ...product.toObject(),
@@ -226,6 +226,7 @@ const updateBiddingStatus = async() => {
                 // Create a new ORder with highest bidder and the product
                 const newOrder = new Order({
                     userId:highestBid.bidder,
+                    
                     biddingProducts:[{product:product._id,quantity:product.quantity}],
                     total_price:highestBid.amount,
 

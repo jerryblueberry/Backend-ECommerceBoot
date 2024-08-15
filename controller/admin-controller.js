@@ -31,6 +31,8 @@ const getAllRequest = asyncHandler(async(req,res) => {
 const updateStatusToSeller = asyncHandler(async(req,res) => {
     try {
         const {userId} = req.params;
+        const {adminComments} = req.body;
+
         const user = await User.findById(userId);
         const sellerVerify = await SellerDocuments.findById(userId);
         if(!sellerVerify){
@@ -40,9 +42,12 @@ const updateStatusToSeller = asyncHandler(async(req,res) => {
             return res.status(404).json({message:"User not found"});
         }
         sellerVerify.status ="Verified";
+        sellerVerify.adminComments = adminComments;
         user.role = "seller"
+
         await user.save();
         await sellerVerify.save();
+        
         res.status(200).json({message:"Status Updated to Seller"});
     } catch (error) {
         res.status(500).json({error:error.message});

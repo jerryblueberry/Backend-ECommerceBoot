@@ -107,6 +107,32 @@ const addProduct = asyncHandler(async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
+//  search product
+const searchProduct = asyncHandler(async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ message: "Query Parameter is required" });
+    }
+
+    // Perform the partial text search using regex
+    const regex = new RegExp(query, 'i'); // 'i' for case-insensitive search
+    const products = await Product.find({
+      name: { $regex: regex }
+    });
+
+    // Return the search results
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
 // get all products
 const getProducts = async (req, res) => {
   try {
@@ -390,5 +416,6 @@ module.exports = {
   mobileBrands,
   fashionCategories,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  searchProduct
 };
