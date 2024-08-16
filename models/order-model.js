@@ -32,6 +32,11 @@ const OrderSchema = new mongoose.Schema({
     total_price:{
         type:Number
     },
+    storeId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Store",
+        
+    },
     timestamp:{
         type:Date,
         default:Date.now

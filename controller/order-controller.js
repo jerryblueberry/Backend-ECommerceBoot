@@ -6,6 +6,7 @@ const Cart = require('../models/cart-model');
 const orderProduct = asyncHandler(async(req,res) => {
     try {
         const userId = req.user._id;
+        const {storeId} = req.body;
         if(!userId){
             return res.status(400).json({message:"User Id Parameter Not Found"});
 
@@ -24,6 +25,7 @@ const orderProduct = asyncHandler(async(req,res) => {
             userId,
             products:userCart.products,
             total_price:userCart.total_price,
+            storeId
         });
 
         const savedOrder = await newOrder.save();
@@ -47,7 +49,7 @@ const getOrders = asyncHandler(async(req,res) => {
 
         }
 
-        const orders = await Order.find({userId}).populate('products.product').populate('biddingProducts.product');
+        const orders = await Order.find({userId}).populate('products.product').populate('storeId',"name");
         res.status(200).json({orders});
     } catch (error) {
         res.status(500).json({error:error.message});
@@ -55,12 +57,18 @@ const getOrders = asyncHandler(async(req,res) => {
 });
 
 //  get orders for the stores
-// const getOrderForStores = asyncHandler((req,res) => {
-//     try {
-//         const {}
-//     } catch (error) {
-//         res.status(200).json({error:error.message});
-//     }
-// })
+const getOrderForStores = asyncHandler(async(req,res) => {
+    try {
+        const {storeId} = req.params;
 
-module.exports = {orderProduct,getOrders};
+        const storeOrders = await Order.find({storeId}).populate('products.product').populate('userId','name')
+        if(!storeOrders){
+            return res.status(400).json({message:"Order not Found"})
+        }
+        res.status(200).json({storeOrders});
+    } catch (error) {
+        res.status(200).json({error:error.message});
+    }
+})
+
+module.exports = {orderProduct,getOrders,getOrderForStores};

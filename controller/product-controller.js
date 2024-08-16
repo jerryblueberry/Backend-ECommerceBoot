@@ -173,6 +173,23 @@ const getProducts = async (req, res) => {
 //   }
 // });
 
+
+//  get all products by their subcategories 
+// "subCategory": "luxury",
+
+const getProductsBySubCategories = asyncHandler(async(req,res) => {
+  try {
+    const {subCategory} = req.params;
+    const products  = await Product.find({subCategory});
+    if(!products){
+      return res.status(400).json({message:"Product Not Found"});
+    }
+    res.status(200).json({products});
+  } catch (error) {
+    res.status(500).json({error:error.message});
+  }
+})
+
 const mobileApi = asyncHandler(async (req, res) => {
   try {
     const { priceRange, brand, ratings, color } = req.query;
@@ -412,6 +429,7 @@ module.exports = {
   getProducts,
   addProduct,
   getProductDetails,
+  getProductsBySubCategories,
   mobileApi,
   mobileBrands,
   fashionCategories,
