@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 
+
 const User = require('./routes/user-routes'); // Routes for Users
 const Store  = require('./routes/store-routes'); //Routes for Stores
 const Product = require('./routes/product-routes'); //Routes for Products
@@ -19,7 +20,11 @@ const PORT  = 5000;
 
 
 
+
 const app = express();
+app.get('/',(req,res) => {
+    res.send("HEHE");
+})
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
