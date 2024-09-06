@@ -33,7 +33,7 @@ const OrderSchema = new mongoose.Schema({
         type:Number
     },
     storeId:{
-        type:mongoose.Schema.Types.ObjectId,
+        type:[mongoose.Schema.Types.ObjectId],
         ref:"Store",
         
     },

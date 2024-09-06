@@ -7,6 +7,8 @@ const Product = require('../models/product-model');
 const createStore = asyncHandler(async(req,res) => {
     try {
         const userId =  req.user._id;
+
+        
         const {name,description,address,category,contactNo,longitude,latitude,subCategory} = req.body;
 
         if(!name || !description || !address || !category || !contactNo || !longitude || !latitude){
